@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "XoidPeer\\x64\\Release\\Client.h.obj",
+            "outputs": [
+                "C:\\Users\\batut\\Desktop\\XoidPeer\\x64\\Release\\XoidPeer.pdb",
+                "XoidPeer\\x64\\Release\\",
+                "C:\\Users\\batut\\Desktop\\XoidPeer\\XoidPeer\\x64\\Release\\Client.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "include\\XoidPeer\\Client.h",
+                    "source-path": "c:\\users\\batut\\desktop\\xoidpeer\\include\\xoidpeer\\client.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}
