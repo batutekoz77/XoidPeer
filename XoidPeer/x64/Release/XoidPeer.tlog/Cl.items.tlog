@@ -1,8 +1,0 @@
-C:\Users\batut\Desktop\XoidPeer\examples\simple_client\main.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\main.obj
-C:\Users\batut\Desktop\XoidPeer\examples\simple_server\main.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\main.obj
-C:\Users\batut\Desktop\XoidPeer\include\XoidPeer\Client.h;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\Client.h.obj
-C:\Users\batut\Desktop\XoidPeer\src\Client.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\Client.obj
-C:\Users\batut\Desktop\XoidPeer\src\Packet.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\Packet.obj
-C:\Users\batut\Desktop\XoidPeer\src\PacketGuard.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\PacketGuard.obj
-C:\Users\batut\Desktop\XoidPeer\src\RateLimiter.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\RateLimiter.obj
-C:\Users\batut\Desktop\XoidPeer\src\Server.cpp;C:\Users\batut\Desktop\XoidPeer\XoidPeer\x64\Release\Server.obj
