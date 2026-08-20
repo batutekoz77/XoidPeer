@@ -6,10 +6,6 @@
 
 namespace XoidPeer
 {
-    // ─────────────────────────────────────────
-    //  Constructor / Destructor
-    // ─────────────────────────────────────────
-
     Server::Server(ServerConfig config)
         : m_config(std::move(config))
     {
@@ -22,10 +18,6 @@ namespace XoidPeer
         Stop();
         enet_deinitialize();
     }
-
-    // ─────────────────────────────────────────
-    //  Lifecycle
-    // ─────────────────────────────────────────
 
     bool Server::Start()
     {
@@ -91,7 +83,6 @@ namespace XoidPeer
 
         if (m_host)
         {
-            // tüm peerları temizce kapat
             {
                 std::scoped_lock lock(m_peersMutex);
                 for (auto& [id, info] : m_peers)
@@ -112,17 +103,13 @@ namespace XoidPeer
         return m_running.load(std::memory_order_acquire);
     }
 
-    // ─────────────────────────────────────────
-    //  Poll Loop
-    // ─────────────────────────────────────────
-
     void Server::PollLoop()
     {
         ENetEvent event{};
 
         while (m_running.load(std::memory_order_acquire))
         {
-            int result = enet_host_service(m_host, &event, 1); // 1ms timeout
+            int result = enet_host_service(m_host, &event, 1);
 
             if (result < 0)
                 break;
@@ -154,10 +141,6 @@ namespace XoidPeer
             }
         }
     }
-
-    // ─────────────────────────────────────────
-    //  Event Handlers
-    // ─────────────────────────────────────────
 
     void Server::HandleConnect(ENetPeer* peer)
     {
@@ -220,13 +203,13 @@ namespace XoidPeer
         if (m_rateLimiter.has_value())
         {
             if (!m_rateLimiter->Check(id, static_cast<uint32_t>(size)))
-                return; // drop
+                return;
         }
 
         if (m_packetGuard.has_value())
         {
             if (!m_packetGuard->Validate({ data, size }))
-                return; // drop
+                return;
         }
 
         IncomingPacket pkt{};
@@ -234,7 +217,6 @@ namespace XoidPeer
         pkt.channel = channel;
         pkt.data.assign(data, data + size);
 
-        // ping güncelle
         {
             std::scoped_lock lock(m_peersMutex);
             auto it = m_peers.find(id);
@@ -244,10 +226,6 @@ namespace XoidPeer
 
         m_onPacket(GetPeer(id) ? *GetPeer(id) : PeerInfo{}, std::move(pkt));
     }
-
-    // ─────────────────────────────────────────
-    //  Send
-    // ─────────────────────────────────────────
 
     void Server::Send(uint32_t peerId, const Packet& packet)
     {
@@ -319,10 +297,6 @@ namespace XoidPeer
         enet_host_flush(m_host);
     }
 
-    // ─────────────────────────────────────────
-    //  Peer Management
-    // ─────────────────────────────────────────
-
     void Server::Kick(uint32_t peerId)
     {
         std::scoped_lock lock(m_peersMutex);
@@ -354,17 +328,9 @@ namespace XoidPeer
         return m_peers.size();
     }
 
-    // ─────────────────────────────────────────
-    //  Callbacks
-    // ─────────────────────────────────────────
-
     void Server::SetOnClientConnect(OnClientConnectFn    fn) noexcept { m_onConnect = std::move(fn); }
     void Server::SetOnClientDisconnect(OnClientDisconnectFn fn) noexcept { m_onDisconnect = std::move(fn); }
     void Server::SetOnPacketReceived(OnServerPacketFn fn) noexcept { m_onPacket = std::move(fn); }
-
-    // ─────────────────────────────────────────
-    //  Stats
-    // ─────────────────────────────────────────
 
     uint32_t Server::GetTotalSentPackets() const noexcept
     {
@@ -375,10 +341,6 @@ namespace XoidPeer
     {
         return m_host ? m_host->totalReceivedPackets : 0;
     }
-
-    // ─────────────────────────────────────────
-    //  Internal Helpers
-    // ─────────────────────────────────────────
 
     uint32_t Server::AssignPeerId(ENetPeer* peer)
     {
@@ -395,4 +357,4 @@ namespace XoidPeer
         m_peers.erase(id);
     }
 
-} // namespace XoidPeer
+}
