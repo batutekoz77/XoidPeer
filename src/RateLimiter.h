@@ -6,14 +6,11 @@
 
 namespace XoidPeer::Internal
 {
-    // ─────────────────────────────────────────
-    //  Token Bucket — per peer rate limiter
-    // ─────────────────────────────────────────
     struct TokenBucket
     {
         double   tokens{ 0.0 };
-        double   maxTokens{ 0.0 };  // burst size
-        double   refillRate{ 0.0 };  // tokens per second
+        double   maxTokens{ 0.0 };
+        double   refillRate{ 0.0 };
         uint32_t bytesThisSec{ 0 };
         uint32_t maxBytesPerSec{ 0 };
 
@@ -29,9 +26,6 @@ namespace XoidPeer::Internal
         [[nodiscard]] bool ConsumeBytes(uint32_t n)   noexcept;
     };
 
-    // ─────────────────────────────────────────
-    //  RateLimiter
-    // ─────────────────────────────────────────
     class RateLimiter
     {
     public:
@@ -39,8 +33,6 @@ namespace XoidPeer::Internal
             uint32_t maxBytesPerSecond,
             uint32_t burstSize) noexcept;
 
-        // true  → izin ver
-        // false → drop et
         [[nodiscard]] bool Check(uint32_t peerId, uint32_t packetBytes) noexcept;
 
         void RemovePeer(uint32_t peerId) noexcept;
@@ -58,4 +50,4 @@ namespace XoidPeer::Internal
         mutable std::mutex                        m_mutex{};
     };
 
-} // namespace XoidPeer::Internal
+}
