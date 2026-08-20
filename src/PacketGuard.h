@@ -4,12 +4,6 @@
 
 namespace XoidPeer::Internal
 {
-    // ─────────────────────────────────────────
-    //  PacketGuard
-    //  — magic header doğrulama
-    //  — CRC32 checksum
-    //  — max size kontrolü
-    // ─────────────────────────────────────────
     class PacketGuard
     {
     public:
@@ -18,18 +12,14 @@ namespace XoidPeer::Internal
             bool     checksumEnabled,
             bool     magicBytesEnabled) noexcept;
 
-        // gelen paketi doğrula — false ise drop et
         [[nodiscard]] bool Validate(std::span<const uint8_t> data) const noexcept;
 
-        // gönderilecek pakete header yaz
-        // data en az HeaderSize() kadar büyük olmalı
         void WriteHeader(std::span<uint8_t> data) const noexcept;
 
-        // header + checksum için eklenen toplam byte
         [[nodiscard]] static constexpr size_t HeaderSize() noexcept
         {
-            return sizeof(uint32_t)   // magic
-                + sizeof(uint32_t);  // crc32
+            return sizeof(uint32_t)
+                + sizeof(uint32_t);
         }
 
     private:
@@ -42,4 +32,4 @@ namespace XoidPeer::Internal
         bool     m_magicBytesEnabled{ true };
     };
 
-} // namespace XoidPeer::Internal
+}
