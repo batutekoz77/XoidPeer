@@ -5,9 +5,6 @@
 
 namespace XoidPeer::Internal
 {
-    // ─────────────────────────────────────────
-    //  CRC32 lookup table — compile time
-    // ─────────────────────────────────────────
     namespace
     {
         [[nodiscard]] consteval std::array<uint32_t, 256> BuildCRCTable() noexcept
@@ -28,10 +25,6 @@ namespace XoidPeer::Internal
         constexpr auto kCRCTable = BuildCRCTable();
     }
 
-    // ─────────────────────────────────────────
-    //  Constructor
-    // ─────────────────────────────────────────
-
     PacketGuard::PacketGuard(uint32_t magicHeader,
         uint32_t maxPacketSize,
         bool     checksumEnabled,
@@ -43,21 +36,14 @@ namespace XoidPeer::Internal
     {
     }
 
-    // ─────────────────────────────────────────
-    //  Validate
-    // ─────────────────────────────────────────
-
     bool PacketGuard::Validate(std::span<const uint8_t> data) const noexcept
     {
-        // minimum size kontrolü
         if (data.size() < HeaderSize())
             return false;
 
-        // max size kontrolü
         if (data.size() > m_maxPacketSize)
             return false;
 
-        // magic header kontrolü
         if (m_magicBytesEnabled)
         {
             uint32_t magic{};
@@ -67,16 +53,13 @@ namespace XoidPeer::Internal
                 return false;
         }
 
-        // CRC32 checksum kontrolü
         if (m_checksumEnabled)
         {
-            // son 4 byte gelen checksum
             uint32_t receivedCRC{};
             std::memcpy(&receivedCRC,
                 data.data() + data.size() - sizeof(uint32_t),
                 sizeof(uint32_t));
 
-            // checksum hariç data
             const auto payload = data.subspan(0, data.size() - sizeof(uint32_t));
             const uint32_t computedCRC = ComputeCRC32(payload);
 
@@ -87,43 +70,22 @@ namespace XoidPeer::Internal
         return true;
     }
 
-    // ─────────────────────────────────────────
-    //  WriteHeader
-    // ─────────────────────────────────────────
+    void PacketGuard::WriteHeader(std::span<uint8_t> data) const noexcept {
+        if (data.size() < HeaderSize()) return;
 
-    void PacketGuard::WriteHeader(std::span<uint8_t> data) const noexcept
-    {
-        if (data.size() < HeaderSize())
-            return;
+        if (m_magicBytesEnabled) std::memcpy(data.data(), &m_magic, sizeof(uint32_t));
 
-        // magic yaz — ilk 4 byte
-        if (m_magicBytesEnabled)
-            std::memcpy(data.data(), &m_magic, sizeof(uint32_t));
-
-        // CRC32 yaz — son 4 byte
-        if (m_checksumEnabled)
-        {
-            // checksum alanı hariç hesapla
+        if (m_checksumEnabled) {
             const auto payload = data.subspan(0, data.size() - sizeof(uint32_t));
             const uint32_t crc = ComputeCRC32(payload);
-            std::memcpy(data.data() + data.size() - sizeof(uint32_t),
-                &crc,
-                sizeof(uint32_t));
+            std::memcpy(data.data() + data.size() - sizeof(uint32_t), &crc, sizeof(uint32_t));
         }
     }
 
-    // ─────────────────────────────────────────
-    //  CRC32
-    // ─────────────────────────────────────────
-
-    uint32_t PacketGuard::ComputeCRC32(std::span<const uint8_t> data) noexcept
-    {
+    uint32_t PacketGuard::ComputeCRC32(std::span<const uint8_t> data) noexcept {
         uint32_t crc = 0xFFFFFFFFu;
-
-        for (const uint8_t byte : data)
-            crc = (crc >> 8) ^ kCRCTable[(crc ^ byte) & 0xFFu];
-
+        for (const uint8_t byte : data) crc = (crc >> 8) ^ kCRCTable[(crc ^ byte) & 0xFFu];
         return crc ^ 0xFFFFFFFFu;
     }
 
-} // namespace XoidPeer::Internal
+}
