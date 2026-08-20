@@ -2,10 +2,6 @@
 
 namespace XoidPeer::Internal
 {
-    // ─────────────────────────────────────────
-    //  TokenBucket
-    // ─────────────────────────────────────────
-
     void TokenBucket::Refill() noexcept
     {
         const auto  now = std::chrono::steady_clock::now();
@@ -14,7 +10,6 @@ namespace XoidPeer::Internal
 
         tokens = std::min(maxTokens, tokens + elapsed * refillRate);
 
-        // byte counter'ı her saniye sıfırla
         const double byteElapsed =
             std::chrono::duration<double>(now - lastByteReset).count();
 
@@ -39,7 +34,7 @@ namespace XoidPeer::Internal
     bool TokenBucket::ConsumeBytes(uint32_t n) noexcept
     {
         if (maxBytesPerSec == 0)
-            return true; // unlimited
+            return true;
 
         if (bytesThisSec + n > maxBytesPerSec)
             return false;
@@ -47,10 +42,6 @@ namespace XoidPeer::Internal
         bytesThisSec += n;
         return true;
     }
-
-    // ─────────────────────────────────────────
-    //  RateLimiter
-    // ─────────────────────────────────────────
 
     RateLimiter::RateLimiter(uint32_t maxPacketsPerSecond,
         uint32_t maxBytesPerSecond,
@@ -103,4 +94,4 @@ namespace XoidPeer::Internal
         return m_buckets.emplace(peerId, bucket).first->second;
     }
 
-} // namespace XoidPeer::Internal
+}
